@@ -3,8 +3,8 @@ import socket
 import struct
 import time
 
-import picamera
-import picamera.array
+import picamera2
+import picamera2.array
 # from adafruit_servokit import ServoKit
 
 # ########## Gamepad connection test ##########
