@@ -3,8 +3,8 @@ import socket
 import struct
 import time
 
-import picamera2
-import picamera2.array
+# import picamera2
+# import picamera2.array
 # from adafruit_servokit import ServoKit
 
 # ########## Gamepad connection test ##########
@@ -42,12 +42,12 @@ import picamera2.array
 # ########## /Gamepad connection test ##########
 
 ########## Imaging test ##########
-camera = picamera.PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 24
+# camera = picamera2.PiCamera()
+# camera.resolution = (640, 480)
+# camera.framerate = 24
 # rawCapture = picamera.array.PiRGBArray(camera, size=(640,480))
 
-camera.start_preview()
+# camera.start_preview()
 
 adr = ('10.0.0.2', 5000)
 client = socket.socket()
@@ -55,10 +55,11 @@ client.connect(adr)
 
 connection = client.makefile('wb')
 framecount = 0
-try:    
-    camera.start_recording(connection, format='h264')
-    camera.wait_recording(10)
-    camera.stop_recording()
+try:  
+    client.write('Hello, world')
+    # camera.start_recording(connection, format='h264')
+    # camera.wait_recording(10)
+    # camera.stop_recording()
 finally:
     connection.close()
     client.close()
