@@ -3,7 +3,7 @@ import socket
 import struct
 import time
 
-from picamera2 import Picamera2, encoders
+import picamera2
 # from adafruit_servokit import ServoKit
 
 # ########## Gamepad connection test ##########
@@ -41,7 +41,7 @@ from picamera2 import Picamera2, encoders
 # ########## /Gamepad connection test ##########
 
 ########## Imaging test ##########
-camera = Picamera2()
+camera = picamera2.Picamera2()
 camera.video_configuration.size = (800, 600)
 camera.video_configuration.controls.FrameRate = 25.0
 camera.configure("video")
@@ -50,18 +50,22 @@ camera.configure("video")
 
 # camera.start_preview()
 
-encoder = encoders.H264Encoder(bitrate=10000000)
+encoder = picamera2.encoders.H264Encoder(bitrate=10000000)
+camera.encoder = encoder
 
 adr = ('10.0.0.2', 5000)
 client = socket.socket()
 client.connect(adr)
 
-connection = client.makefile('wb')
+stream = client.makefile('wb')
+camera.encoder.output = picamera2.outputs.FileOutput(stream)
 # framecount = 0
 try:  
-    camera.start_recording(connection, encoder)
-    time.sleep(10)
-    camera.stop_recording()
+    camera.start_encoder()
+    camera.start()
+    time.sleep(20)
+    camera.stop()
+    camera.stop_encoder()
 finally:
-    connection.close()
+    stream.close()
     client.close()
