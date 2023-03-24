@@ -3,8 +3,7 @@ import socket
 import struct
 import time
 
-# import picamera2
-# import picamera2.array
+from picamera2 import Picamera2, encoders
 # from adafruit_servokit import ServoKit
 
 # ########## Gamepad connection test ##########
@@ -42,24 +41,27 @@ import time
 # ########## /Gamepad connection test ##########
 
 ########## Imaging test ##########
-# camera = picamera2.PiCamera()
-# camera.resolution = (640, 480)
-# camera.framerate = 24
-# rawCapture = picamera.array.PiRGBArray(camera, size=(640,480))
+camera = Picamera2()
+camera.video_configuration.size = (800, 600)
+camera.video_configuration.controls.FrameRate = 25.0
+camera.configure("video")
+# Consider adding fast noise reduction here, see "Configurations and runtime
+# camera controls", Picamera2 manual p. 21
 
 # camera.start_preview()
+
+encoder = encoders.H264Encoder(bitrate=10000000)
 
 adr = ('10.0.0.2', 5000)
 client = socket.socket()
 client.connect(adr)
 
 connection = client.makefile('wb')
-framecount = 0
+# framecount = 0
 try:  
-    client.write('Hello, world')
-    # camera.start_recording(connection, format='h264')
-    # camera.wait_recording(10)
-    # camera.stop_recording()
+    camera.start_recording(connection, encoder)
+    time.sleep(10)
+    camera.stop_recording()
 finally:
     connection.close()
     client.close()

@@ -42,8 +42,8 @@ import subprocess
 # ########## /Gamepad connection test ##########
 
 ########## Imaging test ##########
-# cmdline = [r'C:\Program Files\VideoLAN\VLC\vlc.exe', '--demux', 'h264', '-']
-# player = subprocess.Popen(cmdline, stdin=subprocess.PIPE)
+cmdline = [r'C:\Program Files\VideoLAN\VLC\vlc.exe', '--demux', 'h264', '-']
+player = subprocess.Popen(cmdline, stdin=subprocess.PIPE)
 addr = ("", 5000)
 s = socket.socket()
 s.bind(addr)
@@ -57,13 +57,12 @@ try:
         data = client.read(1024)
         if not data:
             break
-        # player.stdin.write(data)
+        player.stdin.write(data)
         data_old = data
-        print(data)
 finally:
     client.close()
     s.close()
-    # player.terminate()
+    player.terminate()
 ########## /Imaging test ###########
 
 # return_msg = client.recv(4096)
