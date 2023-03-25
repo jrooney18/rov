@@ -2,6 +2,7 @@ import io
 import socket
 import struct
 import subprocess
+import time
 
 # import numpy as np
 # import cv2 as cv
@@ -55,6 +56,7 @@ print('Connection to client established.')
 try:
     while True:
         data = client.read(1024)
+        localtime = time.time_ns()
         if not data:
             break
         player.stdin.write(data)
@@ -63,6 +65,9 @@ finally:
     client.close()
     s.close()
     player.terminate()
+sendtime = data_old.decode('utf-8')
+diff = localtime/1e9 - int(sendtime)/1e9
+print('Time difference: {}'.format(diff))
 ########## /Imaging test ###########
 
 # return_msg = client.recv(4096)

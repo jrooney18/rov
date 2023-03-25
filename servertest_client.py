@@ -42,7 +42,7 @@ import picamera2
 
 ########## Imaging test ##########
 camera = picamera2.Picamera2()
-camera.video_configuration.size = (800, 600)
+camera.video_configuration.size = (1024, 768)
 camera.video_configuration.controls.FrameRate = 25.0
 camera.configure("video")
 # Consider adding fast noise reduction here, see "Configurations and runtime
@@ -61,11 +61,13 @@ stream = client.makefile('wb')
 camera.encoder.output = picamera2.outputs.FileOutput(stream)
 # framecount = 0
 try:  
-    camera.start_encoder()
-    camera.start()
-    time.sleep(20)
-    camera.stop()
-    camera.stop_encoder()
+    # camera.start_encoder()
+    # camera.start()
+    # time.sleep(10)
+    # camera.stop()
+    # camera.stop_encoder()
+    sendtime = str(time.time_ns())
+    stream.write(sendtime.encode('utf-8'))
 finally:
     stream.close()
     client.close()
