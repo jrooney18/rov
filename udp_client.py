@@ -3,8 +3,8 @@ import time
 
 import picamera2
 
-UDP_IP = "10.0.0.2"
-UDP_PORT = 5000
+rov_ip = "10.0.0.1"
+rov_port = 5000
 
 img_x = 800
 img_y = 600
@@ -20,10 +20,12 @@ cam.encoder = encoder
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.bind((UDP_IP, UDP_PORT))
+    sock.bind((rov_ip, rov_port))
     sock.listen()
+    print('Waiting for connection...')
     
     conn, addr = sock.accept()
+    print('Connection established. Beginning stream...')
     stream = conn.makefile('wb')
     cam.encoder.output = picamera2.outputs.FileOutput(stream)
     cam.start_encoder()
@@ -31,4 +33,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     time.sleep(15)
     cam.stop()
     cam.stop_encoder()
+    print('Ending stream.')
     conn.close()
+print('All connections closed. Shutting down ROV server.')
