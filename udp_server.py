@@ -1,3 +1,5 @@
+import base64
+import io
 import socket
 import subprocess
 import time
@@ -32,12 +34,19 @@ message = b'Hello'
 
 client_socket.sendto(message,(host_ip,port))
 
+
+img_buffer = io.BytesIO()
 while True:
     packet,_ = client_socket.recvfrom(BUFF_SIZE)
-    npdata = np.fromstring(packet, dtype=np.uint8)
-    frame = cv.imdecode(npdata, 1)
-    cv.imshow("Video", frame)
-    key = cv.waitKey(1) & 0xFF
-    if key == ord('q'):
-        client_socket.close()
+    img_buffer.write(packet)
+    if len(packet) < 65537:
         break
+img_buffer.seek(0)
+data = img_buffer.read()
+npdata = np.frombuffer(data, dtype=np.uint8)
+frame = cv.imdecode(npdata, 1)
+cv.imshow("Video", frame)
+key = cv.waitKey(1) & 0xFF
+if key == ord('q'):
+    client_socket.close()
+    break
