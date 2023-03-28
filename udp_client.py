@@ -39,6 +39,7 @@ import picamera2
 
 
 import io
+import base64
 
 BUFF_SIZE = 65536
 img_x = 800
@@ -56,10 +57,10 @@ cam = picamera2.Picamera2()
 cam.video_configuration.size = (img_x, img_y)
 cam.configure('still')
 
-encoder = picamera2.encoders.JpegEncoder()
-cam.encoder = encoder
+# encoder = picamera2.encoders.JpegEncoder()
+# cam.encoder = encoder
 
-cam.start_encoder()
+# cam.start_encoder()
 cam.start()
 
 print('Listening at:',socket_address)
@@ -70,8 +71,10 @@ while True:
     for frames in range(1, 250):
         img_buffer = io.BytesIO()
         cam.capture_file(img_buffer, format='jpeg')
-        server_socket.sendto(img_buffer, client_addr)
-        time.sleep(1)
+        message = img_buffer.read1()
+        server_socket.sendto(message, client_addr)
+        time.sleep(1/25)
     break
+cam.stop()
 server_socket.close()
 print('ROV server shut down.')
