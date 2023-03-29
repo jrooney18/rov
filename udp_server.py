@@ -48,6 +48,6 @@ while True:
     npdata = np.frombuffer(data, dtype=np.uint8)
     frame = cv.imdecode(npdata, 1)
     cv.imshow("Video", frame)
-    key = cv.waitKey(1/25)
+    key = cv.waitKey(40)
     
 client_socket.close()

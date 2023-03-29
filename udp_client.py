@@ -65,7 +65,7 @@ print('Listening at:',socket_address)
 msg,client_addr = server_socket.recvfrom(BUFF_SIZE)
 print('GOT connection from ',client_addr)
 
-for frames in range(1, 250):
+for frames in range(1, 50):
     img_buffer = io.BytesIO()
     cam.capture_file(img_buffer, format='jpeg')
     img_buffer.seek(0)
@@ -77,7 +77,7 @@ for frames in range(1, 250):
         server_socket.sendto(message, client_addr)
     time.sleep(1/25)
 
-server_socket.sendto(b'')    
+server_socket.sendto(b'', client_addr)    
 cam.stop()
 server_socket.close()
 print('ROV server shut down.')
