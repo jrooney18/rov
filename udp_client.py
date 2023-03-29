@@ -1,6 +1,7 @@
 import socket
 import time
 
+import numpy as np
 import picamera2
 
 # rov_ip = "10.0.0.1"
@@ -41,8 +42,8 @@ import picamera2
 import io
 
 BUFF_SIZE = 65536
-img_x = 80
-img_y = 60
+img_x = 800
+img_y = 640
 
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 # server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,BUFF_SIZE)
@@ -53,13 +54,9 @@ socket_address = (host_ip,port)
 server_socket.bind(socket_address)
 
 cam = picamera2.Picamera2()
-cam.video_configuration.size = (img_x, img_y)
+cam.still_configuration.size = (img_x, img_y)
 cam.configure('still')
 
-# encoder = picamera2.encoders.JpegEncoder()
-# cam.encoder = encoder
-
-# cam.start_encoder()
 cam.start()
 
 print('Listening at:',socket_address)
@@ -68,17 +65,19 @@ print('Listening at:',socket_address)
 msg,client_addr = server_socket.recvfrom(BUFF_SIZE)
 print('GOT connection from ',client_addr)
 
-img_buffer = io.BytesIO()
-cam.capture_file(img_buffer, format='jpeg')
-img_buffer.seek(0)
-while True:
-    message = img_buffer.read(65507)
-    if not message:
-        break
-    print('message size: {}'.format(len(message)))
-    server_socket.sendto(message, client_addr)
+for frames in range(1, 250):
+    img_buffer = io.BytesIO()
+    cam.capture_file(img_buffer, format='jpeg')
+    img_buffer.seek(0)
+    while True:
+        message = img_buffer.read(65507)
+        if not message:
+            break
+        print('message size: {}'.format(len(message)))
+        server_socket.sendto(message, client_addr)
+    time.sleep(1/25)
 
-    
+server_socket.sendto(b'')    
 cam.stop()
 server_socket.close()
 print('ROV server shut down.')
